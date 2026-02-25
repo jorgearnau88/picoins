@@ -258,29 +258,6 @@
     .points-quick { grid-template-columns: repeat(2,1fr); }
     .form-row { grid-template-columns: 1fr; }
   }
-  /* ─── LOGIN SCREEN ─── */
-  #login-screen {
-    position: fixed; inset: 0; z-index: 999;
-    background: var(--bg);
-    background-image:
-      radial-gradient(ellipse at 10% 0%, rgba(127,90,240,0.2) 0%, transparent 50%),
-      radial-gradient(ellipse at 90% 100%, rgba(242,95,76,0.15) 0%, transparent 50%);
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-  }
-  #login-screen.hidden { display: none; }
-  .login-box {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 24px; padding: 40px 36px; width: 100%; max-width: 380px;
-    text-align: center; animation: slideUp 0.3s ease;
-  }
-  .login-logo { font-size: 2.5rem; font-weight: 900; margin-bottom: 6px; }
-  .login-logo span { color: var(--accent1); }
-  .login-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 32px; }
-  .login-box input[type=password] {
-    text-align: center; font-size: 1.1rem; letter-spacing: 4px;
-    margin-bottom: 14px;
-  }
-  .login-error { color: var(--accent3); font-size: 0.82rem; margin-top: 8px; min-height: 20px; }
   /* sync indicator */
   .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 6px; }
   .sync-dot.syncing { background: var(--yellow); animation: pulse 1s infinite; }
@@ -292,20 +269,6 @@
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">PI <span>twelve coins</span></div>
-    <div class="login-sub">Introduce la contraseña para acceder</div>
-    <div class="login-logo" style="font-size:2rem;margin-bottom:20px">🪙</div>
-    <input type="password" id="login-password" placeholder="••••••••"
-      onkeydown="if(event.key==='Enter')checkLogin()">
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="checkLogin()">
-      <i class="fas fa-unlock"></i> Entrar
-    </button>
-    <div class="login-error" id="login-error"></div>
-  </div>
-</div>
 
 <header>
   <div class="logo">
@@ -749,23 +712,7 @@ function startRealtimeSync() {
   });
 }
 
-// ─── LOGIN ───────────────────────────
-const APP_PASSWORD = 'picoins2024'; // ← CAMBIA ESTO por tu contraseña
-
-function checkLogin() {
-  const val = document.getElementById('login-password').value;
-  if (val === APP_PASSWORD) {
-    document.getElementById('login-screen').classList.add('hidden');
-    initApp();
-  } else {
-    document.getElementById('login-error').textContent = '❌ Contraseña incorrecta';
-    document.getElementById('login-password').value = '';
-    document.getElementById('login-password').focus();
-  }
-}
-// Expose checkLogin globally
-window.checkLogin = checkLogin;
-
+// ─── INIT (no login, load directly) ──
 async function initApp() {
   await load();
   updateUndoBtn();
@@ -773,9 +720,7 @@ async function initApp() {
   renderPrizes();
   startRealtimeSync();
 }
-
-// Auto-focus password field
-document.getElementById('login-password').focus();
+initApp();
 // ════════════════════════════════════
 // STATE & CONSTANTS (module scope)
 // ════════════════════════════════════
