@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PI twelve coins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0f0e17;
+    --surface: #1a1826;
+    --surface2: #252336;
+    --border: #2e2c45;
+    --text: #fffffe;
+    --muted: #a7a9be;
+    --accent1: #ff8906;
+    --accent2: #f25f4c;
+    --accent3: #e53170;
+    --accent4: #3da9fc;
+    --green: #2cb67d;
+    --yellow: #ffd803;
+    --purple: #7f5af0;
+    --teal: #0caba8;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --transition: 0.2s ease;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(127,90,240,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(242,95,76,0.1) 0%, transparent 50%);
+  }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px;
+    background: rgba(26,24,38,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent1), var(--accent3)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+  .logo span { color: var(--accent1); }
+  .btn-reset { background: rgba(242,95,76,0.15); color: var(--accent2); border: 1px solid rgba(242,95,76,0.3); padding: 8px 16px; border-radius: var(--radius-sm); cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; transition: var(--transition); display: flex; align-items: center; gap: 6px; }
+  .btn-reset:hover { background: rgba(242,95,76,0.3); }
+  .btn-undo { background: rgba(127,90,240,0.15); color: var(--purple); border: 1px solid rgba(127,90,240,0.3); padding: 8px 16px; border-radius: var(--radius-sm); cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; transition: var(--transition); display: flex; align-items: center; gap: 6px; }
+  .btn-undo:hover:not(:disabled) { background: rgba(127,90,240,0.3); }
+  .btn-undo:disabled { opacity: 0.35; cursor: not-allowed; }
+  .header-actions { display: flex; align-items: center; gap: 8px; }
+  .delete-student-link { display: block; text-align: center; margin-top: 18px; font-size: 0.75rem; color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; transition: var(--transition); background: none; border: none; font-family: 'Nunito', sans-serif; font-weight: 600; width: 100%; }
+  .delete-student-link:hover { color: var(--accent3); }
+
+  /* ─── RED (negative points) ─── */
+  .student-card.in-red { border-color: rgba(229,49,112,0.5); background: rgba(229,49,112,0.06); }
+  .student-card.in-red::before { opacity: 1; background: linear-gradient(90deg, var(--accent3), var(--accent2)); }
+  .student-card.in-red .student-points { color: var(--accent3); }
+  .student-card.in-red .student-name { color: var(--accent3); }
+
+  .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 16px 20px; cursor: pointer; font-weight: 700; font-size: 0.88rem; color: var(--muted); border-bottom: 3px solid transparent; transition: var(--transition); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent1); border-bottom-color: var(--accent1); }
+
+  main { padding: 28px; max-width: 1200px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius-sm); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; transition: var(--transition); }
+  .btn-primary { background: linear-gradient(135deg, var(--accent1), var(--accent3)); color: white; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-success { background: rgba(44,182,125,0.2); color: var(--green); border: 1px solid rgba(44,182,125,0.3); }
+  .btn-success:hover { background: rgba(44,182,125,0.35); }
+  .btn-danger { background: rgba(229,49,112,0.2); color: var(--accent3); border: 1px solid rgba(229,49,112,0.3); }
+  .btn-danger:hover { background: rgba(229,49,112,0.35); }
+  .btn-teal { background: rgba(12,171,168,0.2); color: var(--teal); border: 1px solid rgba(12,171,168,0.3); }
+  .btn-teal:hover { background: rgba(12,171,168,0.35); }
+  .btn-sm { padding: 6px 14px; font-size: 0.82rem; }
+  .btn-icon { padding: 8px; border-radius: 8px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+  .card-title { font-size: 1rem; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+  .card-title i { color: var(--accent1); }
+  .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  label { font-size: 0.82rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  input, select { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); padding: 10px 14px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; transition: var(--transition); outline: none; width: 100%; }
+  input:focus, select:focus { border-color: var(--accent1); box-shadow: 0 0 0 3px rgba(255,137,6,0.15); }
+  input::placeholder { color: #3a3858; }
+  select option { background: var(--surface2); }
+
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .toolbar .spacer { flex: 1; }
+  .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
+
+  .student-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 16px; text-align: center; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+  .student-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent1), var(--accent3)); opacity: 0; transition: var(--transition); }
+  .student-card:hover { border-color: var(--accent1); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .student-card:hover::before { opacity: 1; }
+  .student-card.selected { border-color: var(--purple); background: rgba(127,90,240,0.1); }
+  .student-card.selected::before { opacity: 1; background: linear-gradient(90deg, var(--purple), var(--accent4)); }
+  .student-checkbox { position: absolute; top: 10px; left: 10px; display: none; }
+  .student-checkbox input { width: 18px; height: 18px; accent-color: var(--purple); }
+  .select-mode .student-checkbox { display: block; }
+  .select-mode .student-card { cursor: default; }
+  .select-mode .student-card:hover { transform: none; }
+
+  .avatar { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; color: white; flex-shrink: 0; }
+  .student-name { font-weight: 800; font-size: 0.95rem; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .student-points { font-family: 'Space Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--yellow); }
+  .student-points-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  .prizes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .prize-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: var(--transition); }
+  .prize-card:hover { border-color: var(--accent4); box-shadow: var(--shadow); }
+  .prize-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+  .prize-name { font-weight: 800; font-size: 1rem; }
+  .prize-price { font-family: 'Space Mono', monospace; font-size: 1.8rem; font-weight: 700; color: var(--yellow); }
+  .prize-price-label { font-size: 0.72rem; font-family: 'Nunito', sans-serif; color: var(--muted); }
+  .prize-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .stat { text-align: center; }
+  .stat-value { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.95rem; }
+  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+  .discount-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .discount-row label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; margin: 0; text-transform: none; letter-spacing: 0; }
+  .discount-row input { width: 72px; padding: 6px 10px; font-size: 0.85rem; }
+  .badge-out { background: rgba(229,49,112,0.2); color: var(--accent3); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; font-weight: 700; }
+  .badge-low { background: rgba(255,216,3,0.15); color: var(--yellow); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; font-weight: 700; }
+
+  /* ─── PRIZE CARDS ─── */
+  .shop-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px; cursor: pointer; transition: var(--transition); display:flex; flex-direction:column; gap:10px; }
+  .shop-card:hover:not(.out-of-stock) { border-color: var(--accent4); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .shop-card.out-of-stock { opacity: 0.5; cursor: not-allowed; }
+  .shop-price { font-family: 'Space Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--yellow); }
+  .shop-name { font-weight: 800; font-size: 0.95rem; }
+
+  /* ─── RANDOM PICK ─── */
+  .random-result { text-align:center; padding:24px 0; }
+  .random-avatar { width:80px; height:80px; border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; font-weight:900; color:white; animation: popIn 0.35s cubic-bezier(.175,.885,.32,1.275); }
+  @keyframes popIn { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
+  .random-name { font-size:1.5rem; font-weight:900; margin-bottom:6px; }
+  .random-sub  { font-size:0.85rem; color:var(--muted); }
+
+  /* ─── GROUP BUILDER ─── */
+  .group-builder-result { display:flex; flex-direction:column; gap:12px; margin-top:16px; max-height:360px; overflow-y:auto; }
+  .group-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 16px; }
+  .group-card-title { font-weight:800; font-size:0.82rem; text-transform:uppercase; letter-spacing:1px; color:var(--accent1); margin-bottom:8px; }
+  .group-card-members { font-size:0.9rem; color:var(--text); line-height:1.6; }
+
+  /* ─── SHOP 4-col grid ─── */
+  .shop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media(max-width:900px) { .shop-grid { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:500px)  { .shop-grid { grid-template-columns: 1fr; } }
+  .market-layout { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+  @media(max-width:900px) { .market-layout { grid-template-columns: 1fr; } }
+
+  .market-preview { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin: 14px 0; }
+  .market-preview-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; padding: 5px 0; }
+  .market-preview-row .plabel { color: var(--muted); }
+  .market-preview-row .pval { font-family: 'Space Mono', monospace; font-weight: 700; }
+
+  .trade-log { display: flex; flex-direction: column; gap: 10px; }
+  .trade-entry { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; font-size: 0.88rem; }
+  .trade-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .trade-entry-title { font-weight: 800; }
+  .trade-entry-time { font-size: 0.75rem; color: var(--muted); }
+  .trade-entry-detail { color: var(--muted); line-height: 1.5; }
+  .trade-entry-detail strong { color: var(--text); }
+
+  /* ─── HISTORY SUMMARY ─── */
+  .hist-summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .hist-summary-num { font-family: 'Space Mono', monospace; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+  .hist-summary-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+
+  /* ─── HISTORY ENTRY TYPES ─── */
+  .hist-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; }
+  .hist-badge.purchase { background: rgba(61,169,252,0.18); color: var(--accent4); }
+  .hist-badge.trade    { background: rgba(127,90,240,0.18); color: var(--purple); }
+  .hist-badge.use      { background: rgba(12,171,168,0.18); color: var(--teal); }
+  .hist-badge.points   { background: rgba(255,216,3,0.15);  color: var(--yellow); }
+
+  /* ─── MODALS ─── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px; width: 100%; max-width: 460px; animation: slideUp 0.25s ease; max-height: 90vh; overflow-y: auto; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .modal-title { font-size: 1.1rem; font-weight: 800; }
+  .modal-close { background: var(--surface2); border: none; color: var(--muted); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+  .modal-close:hover { background: var(--border); color: var(--text); }
+
+  /* ─── CUSTOM CONFIRM DIALOG (z:300, above all modals) ─── */
+  #confirm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:300; align-items:center; justify-content:center; padding:20px; }
+  #confirm-overlay.open { display:flex; }
+  #confirm-box { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px 28px; width:100%; max-width:420px; animation:slideUp 0.2s ease; text-align:center; }
+  #confirm-icon { font-size:2.8rem; margin-bottom:12px; }
+  #confirm-title { font-size:1.05rem; font-weight:800; margin-bottom:8px; }
+  #confirm-msg { font-size:0.88rem; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+  .confirm-actions { display:flex; gap:12px; justify-content:center; }
+  .confirm-actions .btn { min-width:120px; justify-content:center; }
+
+  .points-display { text-align: center; background: var(--bg); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .points-big { font-family: 'Space Mono', monospace; font-size: 2.8rem; font-weight: 700; color: var(--yellow); }
+  .points-quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .btn-quick { padding: 12px 8px; border-radius: var(--radius-sm); font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; transition: var(--transition); }
+  .btn-quick.plus { background: rgba(44,182,125,0.2); color: var(--green); border: 1px solid rgba(44,182,125,0.3); }
+  .btn-quick.plus:hover { background: rgba(44,182,125,0.35); }
+  .btn-quick.minus { background: rgba(229,49,112,0.2); color: var(--accent3); border: 1px solid rgba(229,49,112,0.3); }
+  .btn-quick.minus:hover { background: rgba(229,49,112,0.35); }
+  .custom-points { display: flex; gap: 10px; }
+  .custom-points input { flex: 1; width: auto; }
+
+  .step { display: none; }
+  .step.active { display: block; }
+  .student-list-select { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+  .student-list-select::-webkit-scrollbar { width: 4px; }
+  .student-list-select::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .student-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--radius-sm); cursor: pointer; background: var(--bg); border: 1px solid var(--border); transition: var(--transition); }
+  .student-option:hover { border-color: var(--accent4); }
+  .student-option .s-name { font-weight: 700; flex: 1; }
+  .student-option .s-pts { font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--yellow); }
+
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.9rem; z-index: 999; animation: toastIn 0.3s ease; max-width: 340px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+  .toast.success { background: var(--green); color: white; }
+  .toast.error { background: var(--accent2); color: white; }
+  .toast.info { background: var(--purple); color: white; }
+
+  .group-info { background: var(--bg); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px; font-size: 0.88rem; color: var(--muted); }
+  .group-info strong { color: var(--text); }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty i { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; display: block; }
+
+  .section-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    header { padding: 14px 16px; }
+    main { padding: 16px; }
+    .tabs { padding: 0 8px; }
+    .tab { padding: 14px 12px; font-size: 0.8rem; }
+    .points-quick { grid-template-columns: repeat(2,1fr); }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon"><i class="fas fa-coins" style="color:white"></i></div>
+    PI <span>twelve coins</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled title="Deshacer última acción">
+      <i class="fas fa-undo"></i> Deshacer
+    </button>
+    <button class="btn-reset" onclick="confirmReset()"><i class="fas fa-trash-alt"></i> Reset</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tab active" data-tab="students"><i class="fas fa-users"></i> Alumnos</div>
+  <div class="tab" data-tab="prizes"><i class="fas fa-gift"></i> Premios</div>
+  <div class="tab" data-tab="shop"><i class="fas fa-shopping-bag"></i> Tienda</div>
+  <div class="tab" data-tab="market"><i class="fas fa-handshake"></i> Mercado P2P</div>
+  <div class="tab" data-tab="history"><i class="fas fa-history"></i> Historial</div>
+</nav>
+
+<main>
+
+  <!-- ═══ ALUMNOS ═══ -->
+  <section class="section active" id="section-students">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-user-plus"></i> Añadir Alumno</div>
+      <div style="display:flex;gap:12px;align-items:flex-end">
+        <div class="form-group" style="flex:1">
+          <label>Nombre del alumno</label>
+          <input type="text" id="inp-student-name" placeholder="Nombre completo" maxlength="30">
+        </div>
+        <button class="btn btn-primary" onclick="addStudent()" style="flex-shrink:0"><i class="fas fa-plus"></i> Añadir</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-secondary btn-sm" id="btn-select-mode" onclick="toggleSelectMode()"><i class="fas fa-check-square"></i> Seleccionar varios</button>
+      <button class="btn btn-secondary btn-sm" id="btn-select-all" onclick="selectAll()" style="display:none"><i class="fas fa-border-all"></i> Todos</button>
+      <button class="btn btn-secondary btn-sm" id="btn-deselect-all" onclick="deselectAll()" style="display:none"><i class="fas fa-times"></i> Ninguno</button>
+      <button class="btn btn-secondary btn-sm" onclick="openRandomModal()"><i class="fas fa-dice"></i> Aleatorio</button>
+      <button class="btn btn-secondary btn-sm" onclick="openGroupBuilderModal()"><i class="fas fa-object-group"></i> Crear grupos</button>
+      <div class="spacer"></div>
+      <button class="btn btn-success btn-sm" id="btn-group-points" onclick="openGroupModal()" style="display:none"><i class="fas fa-coins"></i> Puntos grupales</button>
+    </div>
+    <div class="student-grid" id="student-grid"></div>
+  </section>
+
+  <!-- ═══ PREMIOS ═══ -->
+  <section class="section" id="section-prizes">
+    <div class="card">
+      <div class="card-title"><i class="fas fa-plus-circle"></i> Crear Premio</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="inp-prize-name" placeholder="Tiempo libre, etc." maxlength="40">
+        </div>
+        <div class="form-group">
+          <label>Precio Base ($)</label>
+          <input type="number" id="inp-prize-base" placeholder="10" min="1">
+        </div>
+        <div class="form-group">
+          <label>Stock Inicial</label>
+          <input type="number" id="inp-prize-stock" placeholder="5" min="1">
+        </div>
+        <div class="form-group">
+          <label>Demanda Inicial</label>
+          <input type="number" id="inp-prize-demand" placeholder="0" min="0">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addPrize()"><i class="fas fa-plus"></i> Crear Premio</button>
+    </div>
+    <div class="prizes-grid" id="prizes-grid"></div>
+  </section>
+
+  <!-- ═══ TIENDA ═══ -->
+  <section class="section" id="section-shop">
+    <!-- SUB-TABS -->
+    <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="shop-sub-buy" onclick="switchShopTab('buy')">
+        <i class="fas fa-shopping-cart"></i> Comprar Premio
+      </button>
+      <button class="btn btn-secondary" id="shop-sub-use" onclick="switchShopTab('use')">
+        <i class="fas fa-magic"></i> Usar Premio
+      </button>
+    </div>
+
+    <!-- COMPRAR -->
+    <div id="shop-panel-buy">
+      <div class="shop-grid" id="shop-grid"></div>
+    </div>
+
+    <!-- USAR -->
+    <div id="shop-panel-use" style="display:none">
+      <div class="card" style="max-width:480px">
+        <div class="card-title"><i class="fas fa-magic"></i> Usar un Premio</div>
+        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:18px">Al usar un premio, el stock aumenta en +1 (vuelve a estar disponible). El uso queda registrado en el historial.</p>
+        <div class="form-group" style="margin-bottom:14px">
+          <label>Premio</label>
+          <select id="use-prize-select" onchange="updateUsePrizePreview()">
+            <option value="">— Selecciona un premio —</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:18px">
+          <label>Alumno que lo usa</label>
+          <select id="use-prize-student" onchange="updateUsePrizePreview()">
+            <option value="">— Selecciona alumno —</option>
+          </select>
+        </div>
+        <div id="use-prize-preview" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;font-size:0.88rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="color:var(--muted)">Premio</span>
+            <strong id="upp-name"></strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="color:var(--muted)">Stock actual</span>
+            <span id="upp-stock" style="font-family:'Space Mono',monospace;font-weight:700"></span>
+          </div>
+          <div style="height:1px;background:var(--border);margin:8px 0"></div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Stock tras uso</span>
+            <span style="font-family:'Space Mono',monospace;font-weight:700;color:var(--green)" id="upp-after"></span>
+          </div>
+        </div>
+        <button class="btn btn-teal" style="width:100%;justify-content:center" onclick="processPrizeUse()">
+          <i class="fas fa-magic"></i> Confirmar uso (stock +1)
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MERCADO P2P ═══ -->
+  <section class="section" id="section-market">
+    <div style="max-width:520px">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-handshake"></i> Nueva Transacción P2P</div>
+
+        <div class="section-label">Premio intercambiado</div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label>Premio</label>
+          <select id="mkt-prize" onchange="updateMarketPreview()">
+            <option value="">— Selecciona un premio —</option>
+          </select>
+        </div>
+
+        <div class="section-label">Participantes</div>
+        <div class="form-row" style="margin-bottom:16px">
+          <div class="form-group">
+            <label>🛒 Comprador</label>
+            <select id="mkt-buyer" onchange="updateMarketPreview()">
+              <option value="">— Comprador —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>💰 Vendedor</label>
+            <select id="mkt-seller" onchange="updateMarketPreview()">
+              <option value="">— Vendedor —</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-label">Precio pactado</div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label>Precio ($)</label>
+          <input type="number" id="mkt-price" placeholder="Precio negociado entre alumnos" min="0" oninput="updateMarketPreview()">
+        </div>
+
+        <div class="market-preview" id="mkt-preview" style="display:none">
+          <div class="market-preview-row"><span class="plabel">Comprador paga</span><span class="pval" id="prev-buyer-pays" style="color:var(--accent3)"></span></div>
+          <div class="market-preview-row"><span class="plabel">Vendedor recibe</span><span class="pval" id="prev-seller-gets" style="color:var(--green)"></span></div>
+          <div style="height:1px;background:var(--border);margin:8px 0"></div>
+          <div class="market-preview-row"><span class="plabel">Saldo comprador tras tx</span><span class="pval" id="prev-buyer-after"></span></div>
+          <div class="market-preview-row"><span class="plabel">Saldo vendedor tras tx</span><span class="pval" id="prev-seller-after"></span></div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="processTrade()">
+          <i class="fas fa-exchange-alt"></i> Confirmar Transacción
+        </button>
+      </div>
+      <p style="color:var(--muted);font-size:0.84rem;text-align:center"><i class="fas fa-history"></i> El historial de transacciones P2P está disponible en la pestaña <strong>Historial</strong>.</p>
+    </div>
+  </section>
+
+  <!-- ═══ HISTORIAL ═══ -->
+  <section class="section" id="section-history">
+
+    <!-- FILTER BAR -->
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-title"><i class="fas fa-filter"></i> Filtrar Historial</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px">
+        <div class="form-group">
+          <label>Buscar por alumno</label>
+          <select id="hist-student-filter" onchange="renderHistory()">
+            <option value="">— Todos los alumnos —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Buscar por premio</label>
+          <select id="hist-prize-filter" onchange="renderHistory()">
+            <option value="">— Todos los premios —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de movimiento</label>
+          <select id="hist-type-filter" onchange="renderHistory()">
+            <option value="">— Todos los tipos —</option>
+            <option value="points">💰 Puntos (sumar/restar)</option>
+            <option value="purchase">🛒 Compras en tienda</option>
+            <option value="trade">🤝 Transacciones P2P</option>
+            <option value="use">✨ Usos de premio</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-secondary btn-sm" onclick="clearHistFilters()"><i class="fas fa-times"></i> Limpiar filtros</button>
+        <span id="hist-count" style="color:var(--muted);font-size:0.85rem"></span>
+      </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div id="hist-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px"></div>
+
+    <!-- ENTRIES -->
+    <div class="trade-log" id="hist-log">
+      <div class="empty"><i class="fas fa-history"></i><p>El historial aparecerá aquí</p></div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- CONFIRM DIALOG (always on top) -->
+<div id="confirm-overlay">
+  <div id="confirm-box">
+    <div id="confirm-icon">⚠️</div>
+    <div id="confirm-title"></div>
+    <div id="confirm-msg"></div>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary" id="confirm-cancel-btn">Cancelar</button>
+      <button class="btn btn-danger" id="confirm-ok-btn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ALUMNO INDIVIDUAL -->
+<div class="modal-overlay" id="modal-student">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-student-title">Alumno</div>
+      <button class="modal-close" onclick="closeModal('modal-student')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="points-display">
+      <div style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Saldo actual</div>
+      <div class="points-big" id="modal-points-display">$0</div>
+    </div>
+
+    <!-- Preset buttons -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px">
+      <button class="btn-quick plus" onclick="quickPointsWithLabel(1,'Recompensa')"><span style="font-size:1rem">+1</span><br><span style="font-size:0.65rem;font-family:'Nunito',sans-serif;font-weight:700;opacity:0.8">Recompensa</span></button>
+      <button class="btn-quick plus" onclick="quickPointsWithLabel(3,'Sueldo diario')"><span style="font-size:1rem">+3</span><br><span style="font-size:0.65rem;font-family:'Nunito',sans-serif;font-weight:700;opacity:0.8">Sueldo diario</span></button>
+      <button class="btn-quick plus" onclick="quickPointsWithLabel(5,'Premio extra')"><span style="font-size:1rem">+5</span><br><span style="font-size:0.65rem;font-family:'Nunito',sans-serif;font-weight:700;opacity:0.8">Premio extra</span></button>
+      <button class="btn-quick minus" onclick="quickPointsWithLabel(-3,'Penalización')"><span style="font-size:1rem">-3</span><br><span style="font-size:0.65rem;font-family:'Nunito',sans-serif;font-weight:700;opacity:0.8">Penalización</span></button>
+    </div>
+
+    <!-- Motivo -->
+    <div class="form-group" style="margin-bottom:12px">
+      <label>Motivo (opcional)</label>
+      <input type="text" id="pts-reason-input" placeholder="Ej: Buena participación, tarea entregada..." maxlength="80">
+    </div>
+
+    <!-- Manual -->
+    <div class="section-label" style="margin-bottom:8px">Cantidad manual</div>
+    <div class="custom-points">
+      <input type="number" id="custom-pts-input" placeholder="Cantidad (puede ser negativa)">
+      <button class="btn btn-primary" onclick="applyCustomPoints()"><i class="fas fa-check"></i></button>
+    </div>
+
+    <button class="delete-student-link" onclick="deleteCurrentStudent()">
+      <i class="fas fa-user-minus"></i> eliminar alumno
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: GRUPO -->
+<div class="modal-overlay" id="modal-group">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-users"></i> Puntos Grupales</div>
+      <button class="modal-close" onclick="closeModal('modal-group')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="group-info" id="group-info"></div>
+    <div class="points-quick">
+      <button class="btn-quick minus" onclick="quickGroupPoints(-5)">-5</button>
+      <button class="btn-quick minus" onclick="quickGroupPoints(-1)">-1</button>
+      <button class="btn-quick plus" onclick="quickGroupPoints(1)">+1</button>
+      <button class="btn-quick plus" onclick="quickGroupPoints(5)">+5</button>
+    </div>
+    <div class="custom-points">
+      <input type="number" id="custom-group-pts-input" placeholder="Cantidad personalizada">
+      <button class="btn btn-primary" onclick="applyCustomGroupPoints()"><i class="fas fa-check"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TIENDA COMPRA -->
+<div class="modal-overlay" id="modal-shop">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="shop-modal-title">Comprar Premio</div>
+      <button class="modal-close" onclick="closeModal('modal-shop')"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="shop-step-1" class="step active">
+      <p style="color:var(--muted);margin-bottom:16px;font-size:0.9rem;">¿Quién realiza la compra?</p>
+      <div class="student-list-select" id="shop-student-list"></div>
+    </div>
+    <div id="shop-step-2" class="step">
+      <div style="text-align:center;padding:24px;">
+        <div style="font-size:3rem;margin-bottom:12px;" id="shop-result-icon">✅</div>
+        <div id="shop-result-msg" style="font-weight:700;font-size:1rem;line-height:1.6"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="closeModal('modal-shop')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ALEATORIO -->
+<div class="modal-overlay" id="modal-random">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-dice"></i> Alumno Aleatorio</div>
+      <button class="modal-close" onclick="closeModal('modal-random')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="random-result" id="random-result">
+      <div style="color:var(--muted);font-size:0.9rem">Pulsa el botón para elegir un alumno al azar.</div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="pickRandom()">
+      <i class="fas fa-random"></i> ¡Elegir!
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: CREAR GRUPOS -->
+<div class="modal-overlay" id="modal-groups">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-object-group"></i> Crear Grupos Aleatorios</div>
+      <button class="modal-close" onclick="closeModal('modal-groups')"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="group-builder-form">
+      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:16px">Indica cuántos alumnos por grupo. Los grupos se formarán aleatoriamente.</p>
+      <div class="form-group" style="margin-bottom:16px">
+        <label>Alumnos por grupo</label>
+        <input type="number" id="inp-group-size" placeholder="Ej: 3" min="2" max="20">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="buildGroups()">
+        <i class="fas fa-random"></i> Generar grupos
+      </button>
+    </div>
+    <div class="group-builder-result" id="group-builder-result"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════
+// STATE & CONSTANTS
+// ════════════════════════════════════
+const COLORS = [
+  'linear-gradient(135deg,#ff8906,#e53170)',
+  'linear-gradient(135deg,#3da9fc,#7f5af0)',
+  'linear-gradient(135deg,#2cb67d,#3da9fc)',
+  'linear-gradient(135deg,#ffd803,#ff8906)',
+  'linear-gradient(135deg,#e53170,#7f5af0)',
+  'linear-gradient(135deg,#7f5af0,#2cb67d)',
+  'linear-gradient(135deg,#f25f4c,#ffd803)',
+  'linear-gradient(135deg,#90b4ce,#3da9fc)',
+];
+
+let state = { students: [], prizes: [], trades: [], prizeUseLog: [], pointsLog: [] };
+let undoStack = []; // stores up to 10 serialized state snapshots
+let currentStudentId = null;
+let selectMode = false;
+let currentPrizeId = null;
+
+function load() {
+  try {
+    const d = localStorage.getItem('classpoints_v3');
+    if (d) {
+      const parsed = JSON.parse(d);
+      state = { trades: [], prizeUseLog: [], pointsLog: [], ...parsed };
+    }
+  } catch(e) {}
+}
+function save() { localStorage.setItem('classpoints_v3', JSON.stringify(state)); }
+
+// Call BEFORE mutating state to capture a restorable snapshot
+function snapshot(label) {
+  undoStack.unshift({ label, state: JSON.stringify(state) });
+  if (undoStack.length > 10) undoStack.length = 10;
+  updateUndoBtn();
+}
+
+function updateUndoBtn() {
+  const btn = document.getElementById('btn-undo');
+  if (!btn) return;
+  btn.disabled = undoStack.length === 0;
+  btn.title = undoStack.length > 0
+    ? 'Deshacer: ' + undoStack[0].label + ' (' + undoStack.length + ' disponible' + (undoStack.length > 1 ? 's' : '') + ')'
+    : 'Nada que deshacer';
+}
+
+function undoLastAction() {
+  if (!undoStack.length) return;
+  const snap = undoStack.shift();
+  state = JSON.parse(snap.state);
+  save();
+  updateUndoBtn();
+  renderStudents(); renderPrizes(); renderShop();
+  // refresh whichever tab is active
+  const activeTab = document.querySelector('.tab.active')?.dataset.tab;
+  if (activeTab === 'shop') populateUsePrizeSelects();
+  if (activeTab === 'market') populateMarketSelects();
+  if (activeTab === 'history') { populateHistoryFilters(); renderHistory(); }
+  showToast('↩ Deshecho: ' + snap.label, 'info');
+}
+
+// ─── CUSTOM CONFIRM ──────────────────────────────────
+// showConfirm({ icon, title, msg, okLabel, okClass, onOk })
+function showConfirm({ icon = '⚠️', title, msg, okLabel = 'Confirmar', okClass = 'btn-danger', onOk }) {
+  document.getElementById('confirm-icon').textContent  = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').innerHTML     = msg;
+  const okBtn = document.getElementById('confirm-ok-btn');
+  okBtn.textContent = okLabel;
+  okBtn.className   = 'btn ' + okClass;
+  document.getElementById('confirm-overlay').classList.add('open');
+
+  // Replace buttons to clear old listeners
+  const freshOk     = okBtn.cloneNode(true);
+  const freshCancel = document.getElementById('confirm-cancel-btn').cloneNode(true);
+  okBtn.parentNode.replaceChild(freshOk, okBtn);
+  document.getElementById('confirm-cancel-btn').parentNode.replaceChild(freshCancel, document.getElementById('confirm-cancel-btn'));
+
+  function close() { document.getElementById('confirm-overlay').classList.remove('open'); }
+  freshCancel.addEventListener('click', close);
+  freshOk.addEventListener('click', () => { close(); onOk(); });
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function fmtTime(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('es-ES',{day:'2-digit',month:'short'}) + ' ' +
+         d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function isLightColor(hex) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return (r*299+g*587+b*114)/1000 > 128;
+}
+
+// ════════════════════════════════════
+// TABS
+// ════════════════════════════════════
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('section-' + t.dataset.tab).classList.add('active');
+    if (t.dataset.tab === 'shop') { renderShop(); populateUsePrizeSelects(); }
+    if (t.dataset.tab === 'market') { populateMarketSelects(); }
+    if (t.dataset.tab === 'history') { populateHistoryFilters(); renderHistory(); }
+  });
+});
+
+// ════════════════════════════════════
+// STUDENTS
+// ════════════════════════════════════
+function addStudent() {
+  const name = document.getElementById('inp-student-name').value.trim();
+  if (!name) return showToast('Introduce un nombre', 'error');
+  snapshot('Añadir alumno: ' + name);
+  state.students.push({ id: uid(), name, points: 0, colorIdx: state.students.length % COLORS.length });
+  save(); renderStudents();
+  document.getElementById('inp-student-name').value = '';
+  showToast(name + ' añadido ✓', 'success');
+}
+
+function renderStudents() {
+  const grid = document.getElementById('student-grid');
+  if (!state.students.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><i class="fas fa-users"></i><p>Añade el primer alumno</p></div>';
+    return;
+  }
+  grid.innerHTML = state.students.map(s => {
+    const init = s.name.charAt(0).toUpperCase();
+    const inRed = s.points < 0;
+    return `<div class="student-card${inRed ? ' in-red' : ''}" id="scard-${s.id}" onclick="handleStudentClick('${s.id}')">
+      <div class="student-checkbox"><input type="checkbox" id="chk-${s.id}" onclick="event.stopPropagation();toggleSelect('${s.id}')"></div>
+      <div class="avatar" style="background:${COLORS[s.colorIdx]}">${init}</div>
+      <div class="student-name">${escHtml(s.name)}</div>
+      <div class="student-points" style="${inRed ? 'color:var(--accent3)' : ''}">$${s.points}</div>
+      <div class="student-points-label">${inRed ? '⚠ números rojos' : 'monedas'}</div>
+    </div>`;
+  }).join('');
+}
+
+function handleStudentClick(id) {
+  if (selectMode) {
+    const chk = document.getElementById('chk-' + id);
+    chk.checked = !chk.checked;
+    toggleSelect(id);
+    return;
+  }
+  openStudentModal(id);
+}
+
+function toggleSelectMode() {
+  selectMode = !selectMode;
+  const grid = document.getElementById('student-grid');
+  const btnMode = document.getElementById('btn-select-mode');
+  const extras = ['btn-select-all','btn-deselect-all','btn-group-points'];
+  if (selectMode) {
+    grid.classList.add('select-mode');
+    btnMode.innerHTML = '<i class="fas fa-times"></i> Cancelar';
+    extras.forEach(id => document.getElementById(id).style.display = 'inline-flex');
+  } else {
+    grid.classList.remove('select-mode');
+    btnMode.innerHTML = '<i class="fas fa-check-square"></i> Seleccionar varios';
+    extras.forEach(id => document.getElementById(id).style.display = 'none');
+    document.querySelectorAll('.student-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('[id^="chk-"]').forEach(c => c.checked = false);
+  }
+}
+
+function selectAll() {
+  document.querySelectorAll('[id^="chk-"]').forEach(c => c.checked = true);
+  document.querySelectorAll('.student-card').forEach(c => c.classList.add('selected'));
+}
+function deselectAll() {
+  document.querySelectorAll('[id^="chk-"]').forEach(c => c.checked = false);
+  document.querySelectorAll('.student-card').forEach(c => c.classList.remove('selected'));
+}
+function toggleSelect(id) {
+  document.getElementById('scard-' + id).classList.toggle('selected', document.getElementById('chk-' + id).checked);
+}
+function getSelectedIds() {
+  return [...document.querySelectorAll('[id^="chk-"]:checked')].map(c => c.id.replace('chk-',''));
+}
+
+// ─── RANDOM PICKER ───────────────────────────────────
+let recentRandomIds = []; // track recent picks to avoid repeats (60% rule)
+
+function openRandomModal() {
+  if (!state.students.length) return showToast('No hay alumnos', 'error');
+  document.getElementById('random-result').innerHTML = '<div style="color:var(--muted);font-size:0.9rem;padding:20px 0">Pulsa el botón para elegir un alumno al azar.</div>';
+  openModal('modal-random');
+}
+
+function pickRandom() {
+  if (!state.students.length) return;
+  const all = state.students;
+  if (all.length === 1) {
+    showRandomResult(all[0]);
+    return;
+  }
+  // Build candidate pool: exclude recent picks 60% of the time
+  const maxRecent = Math.floor(all.length * 0.6);
+  const recent = recentRandomIds.slice(0, maxRecent);
+  let pool = all.filter(s => !recent.includes(s.id));
+  if (!pool.length) pool = all; // fallback if everyone's been picked
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  // Update recent list
+  recentRandomIds = recentRandomIds.filter(id => id !== chosen.id);
+  recentRandomIds.unshift(chosen.id);
+  if (recentRandomIds.length > all.length) recentRandomIds.length = all.length;
+  showRandomResult(chosen);
+}
+
+function showRandomResult(s) {
+  const init = s.name.charAt(0).toUpperCase();
+  document.getElementById('random-result').innerHTML = `
+    <div class="random-result">
+      <div class="random-avatar" style="background:${COLORS[s.colorIdx]}">${init}</div>
+      <div class="random-name">${escHtml(s.name)}</div>
+      <div class="random-sub">$${s.points} monedas</div>
+    </div>`;
+}
+
+// ─── GROUP BUILDER ────────────────────────────────────
+function openGroupBuilderModal() {
+  if (state.students.length < 2) return showToast('Necesitas al menos 2 alumnos', 'error');
+  document.getElementById('inp-group-size').value = '';
+  document.getElementById('group-builder-result').innerHTML = '';
+  openModal('modal-groups');
+}
+
+function buildGroups() {
+  const size = parseInt(document.getElementById('inp-group-size').value);
+  if (isNaN(size) || size < 2) return showToast('Indica al menos 2 alumnos por grupo', 'error');
+  if (size > state.students.length) return showToast('Hay menos alumnos que el tamaño de grupo', 'error');
+
+  // Shuffle
+  const shuffled = [...state.students].sort(() => Math.random() - 0.5);
+  const groups = [];
+  for (let i = 0; i < shuffled.length; i += size) {
+    groups.push(shuffled.slice(i, i + size));
+  }
+
+  const GCOLORS = ['var(--accent1)','var(--accent4)','var(--green)','var(--purple)','var(--teal)','var(--yellow)','var(--accent3)'];
+  document.getElementById('group-builder-result').innerHTML = groups.map((g, i) => `
+    <div class="group-card">
+      <div class="group-card-title" style="color:${GCOLORS[i % GCOLORS.length]}">Grupo ${i + 1} ${g.length < size ? '(incompleto)' : ''}</div>
+      <div class="group-card-members">${g.map(s => escHtml(s.name)).join(' · ')}</div>
+    </div>`).join('');
+}
+
+function openStudentModal(id) {
+  currentStudentId = id;
+  const s = state.students.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('modal-student-title').textContent = s.name;
+  const ptsEl = document.getElementById('modal-points-display');
+  ptsEl.textContent = '$' + s.points;
+  ptsEl.style.color = s.points < 0 ? 'var(--accent3)' : 'var(--yellow)';
+  document.getElementById('pts-reason-input').value = '';
+  openModal('modal-student');
+}
+
+function quickPoints(delta, label) {
+  const s = state.students.find(x => x.id === currentStudentId);
+  if (!s) return;
+  const reason = (label || document.getElementById('pts-reason-input').value.trim()) || undefined;
+  snapshot((delta > 0 ? '+' : '') + delta + '$ a ' + s.name + (reason ? ' (' + reason + ')' : ''));
+  const before = s.points;
+  s.points += delta;
+  state.pointsLog.unshift({ id: uid(), ts: Date.now(), type: 'points', studentId: s.id, studentName: s.name, delta, before, after: s.points, reason });
+  save();
+  const ptsEl = document.getElementById('modal-points-display');
+  ptsEl.textContent = '$' + s.points;
+  ptsEl.style.color = s.points < 0 ? 'var(--accent3)' : 'var(--yellow)';
+  renderStudents();
+}
+
+function quickPointsWithLabel(delta, label) {
+  quickPoints(delta, label);
+  document.getElementById('pts-reason-input').value = '';
+}
+
+function applyCustomPoints() {
+  const v = parseInt(document.getElementById('custom-pts-input').value);
+  if (isNaN(v)) return showToast('Introduce un número válido', 'error');
+  quickPoints(v);
+  document.getElementById('custom-pts-input').value = '';
+}
+
+function deleteCurrentStudent() {
+  const s = state.students.find(x => x.id === currentStudentId);
+  if (!s) return;
+  showConfirm({
+    icon: '🗑️',
+    title: '¿Eliminar alumno?',
+    msg: '¿Estás seguro de eliminar a <strong>' + escHtml(s.name) + '</strong>?<br><span style="font-size:0.82rem;color:var(--muted)">Puedes deshacer esta acción con el botón Deshacer.</span>',
+    okLabel: 'Sí, eliminar',
+    okClass: 'btn-danger',
+    onOk: () => {
+      snapshot('Eliminar alumno: ' + s.name);
+      state.students = state.students.filter(x => x.id !== currentStudentId);
+      save(); closeModal('modal-student'); renderStudents();
+      showToast('Alumno "' + s.name + '" eliminado', 'info');
+    }
+  });
+}
+
+function openGroupModal() {
+  const ids = getSelectedIds();
+  if (!ids.length) return showToast('Selecciona al menos un alumno', 'error');
+  const names = ids.map(id => state.students.find(s => s.id === id)?.name).filter(Boolean);
+  document.getElementById('group-info').innerHTML = '<strong>' + ids.length + ' alumnos:</strong> ' + names.join(', ');
+  openModal('modal-group');
+}
+
+function quickGroupPoints(delta) {
+  const ids = getSelectedIds();
+  const names = ids.map(id => state.students.find(s => s.id === id)?.name).filter(Boolean);
+  snapshot((delta > 0 ? '+' : '') + delta + '$ grupal (' + names.join(', ') + ')');
+  ids.forEach(id => {
+    const s = state.students.find(x => x.id === id);
+    if (!s) return;
+    const before = s.points;
+    s.points += delta;
+    state.pointsLog.unshift({ id: uid(), ts: Date.now(), type: 'points', studentId: s.id, studentName: s.name, delta, before, after: s.points, group: true });
+  });
+  save(); renderStudents();
+  showToast((delta > 0 ? '+' : '') + delta + '$ aplicados al grupo', 'success');
+}
+
+function applyCustomGroupPoints() {
+  const v = parseInt(document.getElementById('custom-group-pts-input').value);
+  if (isNaN(v)) return showToast('Número inválido', 'error');
+  quickGroupPoints(v);
+  document.getElementById('custom-group-pts-input').value = '';
+}
+
+// ════════════════════════════════════
+// PRIZES
+// ════════════════════════════════════
+function calcDynPrice(p) {
+  const base = parseFloat(p.base) || 0;
+  const demand = parseFloat(p.demand) || 0;
+  const stock = parseFloat(p.stock) || 0.1;
+  let price = base + (demand / Math.max(stock, 0.1)) * 3;
+  price *= (1 + (parseFloat(p.discount) || 0) / 100);
+  return Math.max(0, Math.round(price));
+}
+
+function addPrize() {
+  const name   = document.getElementById('inp-prize-name').value.trim();
+  const base   = parseInt(document.getElementById('inp-prize-base').value);
+  const stock  = parseInt(document.getElementById('inp-prize-stock').value);
+  const demand = parseInt(document.getElementById('inp-prize-demand').value) || 0;
+  if (!name || isNaN(base) || isNaN(stock) || base < 1 || stock < 1)
+    return showToast('Completa todos los campos correctamente', 'error');
+  snapshot('Crear premio: ' + name);
+  state.prizes.push({ id: uid(), name, base, stock, demand, discount: 0 });
+  save();
+  ['inp-prize-name','inp-prize-base','inp-prize-stock','inp-prize-demand'].forEach(i => document.getElementById(i).value = '');
+  renderPrizes();
+  showToast('Premio "' + name + '" creado ✓', 'success');
+}
+
+function renderPrizes() {
+  const grid = document.getElementById('prizes-grid');
+  if (!state.prizes.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><i class="fas fa-gift"></i><p>No hay premios aún</p></div>';
+    return;
+  }
+  grid.innerHTML = state.prizes.map(p => {
+    const dynPrice = calcDynPrice(p);
+    const badge = p.stock === 0 ? '<span class="badge-out">Sin stock</span>' : p.stock <= 2 ? '<span class="badge-low">Stock bajo</span>' : '';
+    const discStr = p.discount > 0 ? '+' + p.discount + '%' : p.discount < 0 ? p.discount + '%' : '0%';
+    return `<div class="prize-card">
+      <div class="prize-header">
+        <div><div class="prize-name">${escHtml(p.name)}</div><div style="margin-top:4px">${badge}</div></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-teal btn-icon btn-sm" title="Añadir stock (+1)" onclick="addPrizeStock('${p.id}')"><i class="fas fa-plus"></i></button>
+          <button class="btn btn-danger btn-icon btn-sm" title="Eliminar premio" onclick="deletePrize('${p.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:4px">Precio dinámico</div>
+      <div class="prize-price">$${dynPrice} <span class="prize-price-label">monedas</span></div>
+      <div class="prize-stats">
+        <div class="stat"><div class="stat-value" style="color:var(--accent1)">$${p.base}</div><div class="stat-label">Base</div></div>
+        <div class="stat"><div class="stat-value" style="color:var(--green)">${p.stock}</div><div class="stat-label">Stock</div></div>
+        <div class="stat"><div class="stat-value" style="color:var(--accent4)">${p.demand}</div><div class="stat-label">Demanda</div></div>
+      </div>
+      <div class="discount-row">
+        <label><i class="fas fa-percent"></i> Ajuste:</label>
+        <input type="number" value="${p.discount}" onchange="updateDiscount('${p.id}',this.value)">
+        <span style="font-size:0.82rem;color:var(--muted)">${discStr}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateDiscount(id, val) {
+  const p = state.prizes.find(x => x.id === id);
+  if (!p) return;
+  snapshot('Ajuste descuento: ' + p.name + ' → ' + val + '%');
+  p.discount = parseFloat(val) || 0;
+  save(); renderPrizes(); renderShopIfVisible();
+}
+
+function deletePrize(id) {
+  const p = state.prizes.find(x => x.id === id);
+  if (!p) return;
+  showConfirm({
+    icon: '🗑️',
+    title: '¿Eliminar premio?',
+    msg: '¿Eliminar el premio <strong>' + escHtml(p.name) + '</strong>?<br><span style="font-size:0.82rem;color:var(--muted)">Puedes deshacer esta acción con el botón Deshacer.</span>',
+    okLabel: 'Sí, eliminar',
+    okClass: 'btn-danger',
+    onOk: () => {
+      snapshot('Eliminar premio: ' + p.name);
+      state.prizes = state.prizes.filter(x => x.id !== id);
+      save(); renderPrizes(); renderShopIfVisible();
+      showToast('"' + p.name + '" eliminado', 'info');
+    }
+  });
+}
+
+function addPrizeStock(id) {
+  const p = state.prizes.find(x => x.id === id);
+  if (!p) return;
+  snapshot('Añadir stock a: ' + p.name);
+  p.stock += 1;
+  save(); renderPrizes(); renderShopIfVisible();
+  showToast('"' + p.name + '" stock +1 → ' + p.stock, 'success');
+}
+
+// ════════════════════════════════════
+// SHOP
+// ════════════════════════════════════
+function renderShop() {
+  const grid = document.getElementById('shop-grid');
+  if (!state.prizes.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><i class="fas fa-shopping-bag"></i><p>No hay premios disponibles</p></div>';
+    return;
+  }
+  grid.innerHTML = state.prizes.map(p => {
+    const dp = calcDynPrice(p);
+    const isOut = p.stock === 0;
+    const isLow = !isOut && p.stock <= 2;
+    const stockBadge = isOut
+      ? '<span class="badge-out">Sin stock</span>'
+      : isLow ? '<span class="badge-low">Stock bajo</span>'
+      : '<span style="background:rgba(44,182,125,0.15);color:var(--green);border-radius:6px;padding:2px 8px;font-size:0.72rem;font-weight:700">Stock OK</span>';
+    return `<div class="shop-card ${isOut ? 'out-of-stock' : ''}" onclick="${isOut ? '' : "openShopModal('" + p.id + "')"}">
+      <div class="shop-name">${escHtml(p.name)}</div>
+      <div class="shop-price">$${dp}</div>
+      ${stockBadge}
+      ${isOut ? '' : '<div style="color:var(--accent4);font-size:0.78rem;font-weight:700;margin-top:auto;padding-top:8px"><i class="fas fa-shopping-cart"></i> Comprar</div>'}
+    </div>`;
+  }).join('');
+}
+
+function renderShopIfVisible() {
+  if (document.getElementById('section-shop').classList.contains('active')) {
+    renderShop();
+    populateUsePrizeSelects();
+  }
+}
+
+function openShopModal(prizeId) {
+  currentPrizeId = prizeId;
+  const p = state.prizes.find(x => x.id === prizeId);
+  if (!p) return;
+  const dp = calcDynPrice(p);
+  document.getElementById('shop-modal-title').textContent = '🛒 ' + p.name + ' — $' + dp;
+  document.getElementById('shop-step-1').classList.add('active');
+  document.getElementById('shop-step-2').classList.remove('active');
+
+  const list = document.getElementById('shop-student-list');
+  if (!state.students.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">No hay alumnos registrados.</div>';
+  } else {
+    list.innerHTML = state.students.map(s => {
+      const init = s.name.charAt(0).toUpperCase();
+      const canBuy = s.points >= dp;
+      return `<div class="student-option" onclick="processPurchase('${s.id}')" style="${!canBuy ? 'opacity:0.38;pointer-events:none' : ''}">
+        <div class="avatar" style="background:${COLORS[s.colorIdx]};width:36px;height:36px;font-size:1rem;flex-shrink:0">${init}</div>
+        <span class="s-name">${escHtml(s.name)}</span>
+        <span class="s-pts">$${s.points}</span>
+      </div>`;
+    }).join('');
+  }
+  openModal('modal-shop');
+}
+
+function processPurchase(studentId) {
+  const p = state.prizes.find(x => x.id === currentPrizeId);
+  const s = state.students.find(x => x.id === studentId);
+  if (!p || !s) return;
+  const dp = calcDynPrice(p);
+  const icon = document.getElementById('shop-result-icon');
+  const msg  = document.getElementById('shop-result-msg');
+  document.getElementById('shop-step-1').classList.remove('active');
+  document.getElementById('shop-step-2').classList.add('active');
+
+  if (p.stock <= 0) {
+    icon.textContent = '❌'; msg.innerHTML = '<span style="color:var(--accent3)">Sin stock disponible.</span>'; return;
+  }
+  if (s.points < dp) {
+    icon.textContent = '😢';
+    msg.innerHTML = '<span style="color:var(--accent3)">' + escHtml(s.name) + ' no tiene saldo suficiente.<br><small style="font-weight:400">Necesita $' + dp + ', tiene $' + s.points + '.</small></span>';
+    return;
+  }
+  snapshot(s.name + ' compra: ' + p.name + ' ($' + dp + ')');
+  s.points -= dp; p.demand += 1; p.stock -= 1;
+  state.pointsLog.unshift({ id: uid(), ts: Date.now(), type: 'purchase', studentId: s.id, studentName: s.name, prizeId: p.id, prizeName: p.name, delta: -dp, before: s.points + dp, after: s.points, price: dp });
+  save(); renderStudents(); renderPrizes(); renderShop();
+  icon.textContent = '🎉';
+  msg.innerHTML = '<span style="color:var(--green)">¡Compra exitosa!<br><small style="font-weight:400">' + escHtml(s.name) + ' compró <strong>' + escHtml(p.name) + '</strong> por $' + dp + '.</small></span>';
+}
+
+// ════════════════════════════════════
+// SHOP SUB-TABS
+// ════════════════════════════════════
+function switchShopTab(tab) {
+  const isBuy = tab === 'buy';
+  document.getElementById('shop-panel-buy').style.display = isBuy ? '' : 'none';
+  document.getElementById('shop-panel-use').style.display = isBuy ? 'none' : '';
+  document.getElementById('shop-sub-buy').className = 'btn ' + (isBuy ? 'btn-primary' : 'btn-secondary');
+  document.getElementById('shop-sub-use').className = 'btn ' + (!isBuy ? 'btn-primary' : 'btn-secondary');
+  if (!isBuy) { populateUsePrizeSelects(); }
+}
+
+// ════════════════════════════════════
+// USE PRIZE
+// ════════════════════════════════════
+function populateUsePrizeSelects() {
+  const prizeOpts = '<option value="">— Selecciona un premio —</option>' +
+    state.prizes.map(p => `<option value="${p.id}">${escHtml(p.name)} (Stock: ${p.stock})</option>`).join('');
+  document.getElementById('use-prize-select').innerHTML = prizeOpts;
+
+  const stuOpts = '<option value="">— Selecciona alumno —</option>' +
+    state.students.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
+  document.getElementById('use-prize-student').innerHTML = stuOpts;
+
+  document.getElementById('use-prize-preview').style.display = 'none';
+}
+
+function updateUsePrizePreview() {
+  const prizeId = document.getElementById('use-prize-select').value;
+  const stuId   = document.getElementById('use-prize-student').value;
+  const preview = document.getElementById('use-prize-preview');
+  if (!prizeId || !stuId) { preview.style.display = 'none'; return; }
+  const p = state.prizes.find(x => x.id === prizeId);
+  if (!p) { preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  document.getElementById('upp-name').textContent  = p.name;
+  document.getElementById('upp-stock').textContent = p.stock;
+  document.getElementById('upp-after').textContent = p.stock + 1;
+}
+
+function processPrizeUse() {
+  const prizeId = document.getElementById('use-prize-select').value;
+  const stuId   = document.getElementById('use-prize-student').value;
+  if (!prizeId || !stuId) return showToast('Selecciona premio y alumno', 'error');
+
+  const prize   = state.prizes.find(x => x.id === prizeId);
+  const student = state.students.find(x => x.id === stuId);
+  if (!prize || !student) return showToast('Error: datos no encontrados', 'error');
+
+  snapshot(student.name + ' usa: ' + prize.name);
+  prize.stock += 1;
+
+  state.prizeUseLog.unshift({
+    id: uid(), ts: Date.now(),
+    prizeName: prize.name, prizeId: prize.id, studentId: student.id, studentName: student.name,
+    stockAfter: prize.stock
+  });
+  state.pointsLog.unshift({ id: uid(), ts: Date.now(), type: 'use', studentId: student.id, studentName: student.name, prizeId: prize.id, prizeName: prize.name });
+
+  save();
+  renderStudents(); renderPrizes(); renderShop();
+  populateUsePrizeSelects();
+  showToast('✅ ' + student.name + ' usó "' + prize.name + '" — stock +1 (' + prize.stock + ')', 'success');
+}
+
+function renderUsePrizeLog() { /* no-op: history is in the Historial tab */ }
+
+// ════════════════════════════════════
+// MARKET P2P
+// ════════════════════════════════════
+function populateMarketSelects() {
+  const prizeOpts = '<option value="">— Selecciona un premio —</option>' +
+    state.prizes.map(p => `<option value="${p.id}">${escHtml(p.name)} (Stock: ${p.stock})</option>`).join('');
+  document.getElementById('mkt-prize').innerHTML = prizeOpts;
+
+  const stuOpts = '<option value="">— Selecciona alumno —</option>' +
+    state.students.map(s => `<option value="${s.id}">${escHtml(s.name)} ($${s.points})</option>`).join('');
+  document.getElementById('mkt-buyer').innerHTML  = stuOpts;
+  document.getElementById('mkt-seller').innerHTML = stuOpts;
+
+  document.getElementById('mkt-preview').style.display = 'none';
+}
+
+function updateMarketPreview() {
+  const prizeId = document.getElementById('mkt-prize').value;
+  const buyerId  = document.getElementById('mkt-buyer').value;
+  const sellerId = document.getElementById('mkt-seller').value;
+  const price    = parseInt(document.getElementById('mkt-price').value);
+  const preview  = document.getElementById('mkt-preview');
+
+  if (!prizeId || !buyerId || !sellerId || isNaN(price)) { preview.style.display = 'none'; return; }
+  if (buyerId === sellerId) { preview.style.display = 'none'; return; }
+
+  const buyer  = state.students.find(s => s.id === buyerId);
+  const seller = state.students.find(s => s.id === sellerId);
+  if (!buyer || !seller) { preview.style.display = 'none'; return; }
+
+  preview.style.display = 'block';
+  document.getElementById('prev-buyer-pays').textContent   = '$' + price;
+  document.getElementById('prev-seller-gets').textContent  = '$' + price;
+  const ba = buyer.points - price;
+  const sa = seller.points + price;
+  document.getElementById('prev-buyer-after').textContent  = '$' + ba;
+  document.getElementById('prev-buyer-after').style.color  = ba < 0 ? 'var(--accent3)' : 'var(--text)';
+  document.getElementById('prev-seller-after').textContent = '$' + sa;
+  document.getElementById('prev-seller-after').style.color = 'var(--green)';
+}
+
+function processTrade() {
+  const prizeId  = document.getElementById('mkt-prize').value;
+  const buyerId   = document.getElementById('mkt-buyer').value;
+  const sellerId  = document.getElementById('mkt-seller').value;
+  const price     = parseInt(document.getElementById('mkt-price').value);
+
+  if (!prizeId || !buyerId || !sellerId) return showToast('Completa todos los campos', 'error');
+  if (isNaN(price) || price < 0) return showToast('Precio inválido', 'error');
+  if (buyerId === sellerId) return showToast('El comprador y vendedor deben ser distintos', 'error');
+
+  const prize  = state.prizes.find(p => p.id === prizeId);
+  const buyer  = state.students.find(s => s.id === buyerId);
+  const seller = state.students.find(s => s.id === sellerId);
+
+  if (!prize || !buyer || !seller) return showToast('Error: datos no encontrados', 'error');
+  if (prize.stock <= 0) return showToast('"' + prize.name + '" sin stock', 'error');
+  if (buyer.points < price) return showToast(buyer.name + ' no tiene saldo suficiente ($' + buyer.points + ')', 'error');
+
+  snapshot('P2P: ' + buyer.name + ' compra "' + prize.name + '" a ' + seller.name + ' ($' + price + ')');
+  const buyerBefore = buyer.points;
+  const sellerBefore = seller.points;
+  buyer.points  -= price;
+  seller.points += price;
+  prize.stock   -= 1;
+  prize.demand  += 1;
+
+  const tradeId = uid();
+  state.trades.unshift({ id: tradeId, ts: Date.now(), prizeId: prize.id, prizeName: prize.name, buyerId: buyer.id, buyerName: buyer.name, sellerId: seller.id, sellerName: seller.name, price });
+  // Log two entries — one per participant
+  state.pointsLog.unshift({ id: uid(), ts: Date.now(), type: 'trade', role: 'buyer', studentId: buyer.id, studentName: buyer.name, prizeId: prize.id, prizeName: prize.name, delta: -price, before: buyerBefore, after: buyer.points, counterpartName: seller.name });
+  state.pointsLog.unshift({ id: uid(), ts: Date.now(), type: 'trade', role: 'seller', studentId: seller.id, studentName: seller.name, prizeId: prize.id, prizeName: prize.name, delta: price, before: sellerBefore, after: seller.points, counterpartName: buyer.name });
+
+  save();
+  renderStudents(); renderPrizes(); renderShopIfVisible();
+  populateMarketSelects();
+
+  showToast('✅ ' + buyer.name + ' compró a ' + seller.name + ' por $' + price, 'success');
+}
+
+function renderTradeLog() { /* no-op: history is in the Historial tab */ }
+
+// ════════════════════════════════════
+// HISTORY
+// ════════════════════════════════════
+function getAllEvents() {
+  // Merge pointsLog (which includes purchases, trades, uses and manual points)
+  return (state.pointsLog || []).slice().sort((a, b) => b.ts - a.ts);
+}
+
+function populateHistoryFilters() {
+  const stuSel = document.getElementById('hist-student-filter');
+  const curStu = stuSel.value;
+  stuSel.innerHTML = '<option value="">— Todos los alumnos —</option>' +
+    state.students.map(s => `<option value="${s.id}" ${curStu === s.id ? 'selected' : ''}>${escHtml(s.name)}</option>`).join('');
+
+  const prSel = document.getElementById('hist-prize-filter');
+  const curPr = prSel.value;
+  prSel.innerHTML = '<option value="">— Todos los premios —</option>' +
+    state.prizes.map(p => `<option value="${p.id}" ${curPr === p.id ? 'selected' : ''}>${escHtml(p.name)}</option>`).join('');
+}
+
+function clearHistFilters() {
+  document.getElementById('hist-student-filter').value = '';
+  document.getElementById('hist-prize-filter').value = '';
+  document.getElementById('hist-type-filter').value = '';
+  renderHistory();
+}
+
+function renderHistory() {
+  const stuId   = document.getElementById('hist-student-filter').value;
+  const prizeId = document.getElementById('hist-prize-filter').value;
+  const type    = document.getElementById('hist-type-filter').value;
+
+  let events = getAllEvents();
+
+  if (stuId)   events = events.filter(e => e.studentId === stuId);
+  if (prizeId) events = events.filter(e => e.prizeId === prizeId);
+  if (type)    events = events.filter(e => e.type === type);
+
+  // Update count
+  document.getElementById('hist-count').textContent = events.length + ' movimiento' + (events.length !== 1 ? 's' : '');
+
+  // Summary cards
+  renderHistorySummary(stuId, prizeId, events);
+
+  const log = document.getElementById('hist-log');
+  if (!events.length) {
+    log.innerHTML = '<div class="empty"><i class="fas fa-search"></i><p>No hay movimientos con estos filtros</p></div>';
+    return;
+  }
+
+  log.innerHTML = events.map(e => {
+    const time = fmtTime(e.ts);
+    let icon, badgeClass, title, detail, deltaHtml = '';
+
+    if (e.delta !== undefined) {
+      const sign = e.delta > 0 ? '+' : '';
+      const col  = e.delta > 0 ? 'var(--green)' : 'var(--accent3)';
+      deltaHtml  = `<span style="font-family:'Space Mono',monospace;font-weight:700;color:${col};margin-left:8px">${sign}$${e.delta}</span>`;
+    }
+
+    if (e.type === 'points') {
+      icon = e.delta > 0 ? '💰' : '📉';
+      badgeClass = 'points';
+      title = escHtml(e.studentName);
+      const groupTag = e.group ? ' <span style="font-size:0.72rem;color:var(--muted)">(grupal)</span>' : '';
+      const reasonTag = e.reason ? ` · <em style="color:var(--muted)">${escHtml(e.reason)}</em>` : '';
+      detail = `Ajuste manual de puntos${groupTag}${reasonTag} · Saldo: <strong>$${e.before}</strong> → <strong>$${e.after}</strong>`;
+    } else if (e.type === 'purchase') {
+      icon = '🛒';
+      badgeClass = 'purchase';
+      title = escHtml(e.studentName);
+      detail = `Compró <strong>${escHtml(e.prizeName)}</strong> en tienda · Saldo: <strong>$${e.before}</strong> → <strong>$${e.after}</strong>`;
+    } else if (e.type === 'trade') {
+      icon = e.role === 'buyer' ? '🤝' : '💵';
+      badgeClass = 'trade';
+      title = escHtml(e.studentName);
+      const roleLabel = e.role === 'buyer' ? `Compró <strong>${escHtml(e.prizeName)}</strong> a <strong>${escHtml(e.counterpartName)}</strong>` : `Vendió <strong>${escHtml(e.prizeName)}</strong> a <strong>${escHtml(e.counterpartName)}</strong>`;
+      detail = `${roleLabel} (P2P) · Saldo: <strong>$${e.before}</strong> → <strong>$${e.after}</strong>`;
+    } else if (e.type === 'use') {
+      icon = '✨';
+      badgeClass = 'use';
+      title = escHtml(e.studentName);
+      detail = `Usó el premio <strong>${escHtml(e.prizeName)}</strong> (stock devuelto +1)`;
+    } else {
+      icon = '📋'; badgeClass = 'points'; title = ''; detail = '';
+    }
+
+    const TYPE_LABELS = { points: 'Puntos', purchase: 'Compra', trade: 'P2P', use: 'Uso' };
+
+    return `<div class="trade-entry" style="border-left:3px solid ${badgeClass === 'purchase' ? 'var(--accent4)' : badgeClass === 'trade' ? 'var(--purple)' : badgeClass === 'use' ? 'var(--teal)' : 'var(--yellow)'}">
+      <div class="trade-entry-header">
+        <span class="trade-entry-title">${icon} ${title}${deltaHtml}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="hist-badge ${badgeClass}">${TYPE_LABELS[e.type] || e.type}</span>
+          <span class="trade-entry-time">${time}</span>
+        </div>
+      </div>
+      <div class="trade-entry-detail">${detail}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderHistorySummary(stuId, prizeId, events) {
+  const el = document.getElementById('hist-summary');
+
+  if (stuId) {
+    const s = state.students.find(x => x.id === stuId);
+    if (!s) { el.innerHTML = ''; return; }
+    const spent     = events.filter(e => e.delta < 0).reduce((acc, e) => acc + Math.abs(e.delta), 0);
+    const earned    = events.filter(e => e.delta > 0).reduce((acc, e) => acc + e.delta, 0);
+    const purchases = events.filter(e => e.type === 'purchase').length;
+    const trades    = events.filter(e => e.type === 'trade').length;
+    const uses      = events.filter(e => e.type === 'use').length;
+    el.innerHTML = `
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--yellow)">$${s.points}</div><div class="hist-summary-label">Saldo actual</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--green)">+$${earned}</div><div class="hist-summary-label">Total ganado</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--accent3)">-$${spent}</div><div class="hist-summary-label">Total gastado</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--accent4)">${purchases}</div><div class="hist-summary-label">Compras en tienda</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--purple)">${trades}</div><div class="hist-summary-label">Transacciones P2P</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--teal)">${uses}</div><div class="hist-summary-label">Premios usados</div></div>`;
+  } else if (prizeId) {
+    const p = state.prizes.find(x => x.id === prizeId);
+    if (!p) { el.innerHTML = ''; return; }
+    const purchases = events.filter(e => e.type === 'purchase').length;
+    const buyerTrades = events.filter(e => e.type === 'trade' && e.role === 'buyer').length;
+    const uses = events.filter(e => e.type === 'use').length;
+    const totalRevenue = events.filter(e => (e.type === 'purchase' || (e.type === 'trade' && e.role === 'seller'))).reduce((a, e) => a + Math.abs(e.delta || 0), 0);
+    el.innerHTML = `
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--yellow)">$${calcDynPrice(p)}</div><div class="hist-summary-label">Precio actual</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--green)">${p.stock}</div><div class="hist-summary-label">Stock actual</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--accent4)">${purchases}</div><div class="hist-summary-label">Compras en tienda</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--purple)">${buyerTrades}</div><div class="hist-summary-label">Transacciones P2P</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--teal)">${uses}</div><div class="hist-summary-label">Veces usado</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--accent1)">$${totalRevenue}</div><div class="hist-summary-label">Valor total movido</div></div>`;
+  } else {
+    // Global summary
+    const totalEvents = events.length;
+    const totalPurchases = events.filter(e => e.type === 'purchase').length;
+    const totalTrades    = events.filter(e => e.type === 'trade' && e.role === 'buyer').length;
+    const totalUses      = events.filter(e => e.type === 'use').length;
+    const totalPoints    = events.filter(e => e.type === 'points').length;
+    el.innerHTML = `
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--accent1)">${totalEvents}</div><div class="hist-summary-label">Movimientos totales</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--yellow)">${totalPoints}</div><div class="hist-summary-label">Ajustes de puntos</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--accent4)">${totalPurchases}</div><div class="hist-summary-label">Compras en tienda</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--purple)">${totalTrades}</div><div class="hist-summary-label">Transacciones P2P</div></div>
+      <div class="hist-summary-card"><div class="hist-summary-num" style="color:var(--teal)">${totalUses}</div><div class="hist-summary-label">Premios usados</div></div>`;
+  }
+}
+
+// ════════════════════════════════════
+// MODALS
+// ════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+
+// ════════════════════════════════════
+// TOAST
+// ════════════════════════════════════
+function showToast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+  t.innerHTML = '<i class="fas ' + icons[type] + '"></i> ' + msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ════════════════════════════════════
+// RESET
+// ════════════════════════════════════
+function confirmReset() {
+  showConfirm({
+    icon: '💥',
+    title: 'Reset total de la aplicación',
+    msg: '¿Estás seguro de que quieres <strong>borrar todos los datos</strong>?<br><span style="font-size:0.82rem;color:var(--muted)">Se eliminarán todos los alumnos, premios, historial y operaciones. Esta acción <u>no se puede deshacer</u>.</span>',
+    okLabel: 'Sí, borrar todo',
+    okClass: 'btn-danger',
+    onOk: () => {
+      localStorage.removeItem('classpoints_v3');
+      state = { students: [], prizes: [], trades: [], prizeUseLog: [], pointsLog: [] };
+      undoStack = [];
+      recentRandomIds = [];
+      updateUndoBtn();
+      renderStudents(); renderPrizes(); renderShop();
+      // If history tab is open, refresh it
+      const activeTab = document.querySelector('.tab.active')?.dataset.tab;
+      if (activeTab === 'history') { populateHistoryFilters(); renderHistory(); }
+      showToast('Aplicación reiniciada a cero ✓', 'info');
+    }
+  });
+}
+
+// ════════════════════════════════════
+// INIT
+// ════════════════════════════════════
+load();
+updateUndoBtn();
+renderStudents();
+renderPrizes();
+</script>
+</body>
+</html>
